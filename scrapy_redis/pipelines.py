@@ -7,14 +7,16 @@ from scrapy.utils.serialize import ScrapyJSONEncoder
 class RedisPipeline(object):
     """Pushes serialized item into a redis list/queue"""
 
-    def __init__(self, host, port):
+    def __init__(self, host, port, queue_type):
         self.server = redis.Redis(host, port)
         self.encoder = ScrapyJSONEncoder()
+	self.queue_type = queue_type
 
     @classmethod
     def from_settings(cls, settings):
         host = settings.get('REDIS_HOST', 'localhost')
         port = settings.get('REDIS_PORT', 6379)
+        queue_type = settings.get('QUEUE_TYPE', 'FIFO')
         return cls(host, port)
 
     def process_item(self, item, spider):
@@ -23,7 +25,11 @@ class RedisPipeline(object):
     def _process_item(self, item, spider):
         key = self.item_key(item, spider)
         data = self.encoder.encode(dict(item))
-        self.server.rpush(key, data)
+        self.server.lpush(key, data)
+	if (self.queue_type == 'LIFO'):
+            self.server.lpush(key, data)
+	else:
+            self.server.rpush(key, data)
         return item
 
     def item_key(self, item, spider):

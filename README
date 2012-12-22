@@ -34,6 +34,11 @@ ITEM_PIPELINES = [
     'scrapy_redis.pipelines.RedisPipeline',
 ]
 
+# default is FIFO, you can also use a LIFO queue
+QUEUE_TYPE='FIFO'
+
+# default is True, you can choose not to have any duplicate filters
+DUPE_FILTER=True
 
 Running the example project
 ---------------------------
