@@ -30,7 +30,7 @@ class Scheduler(object):
         port = settings.get('REDIS_PORT', REDIS_PORT)
         persist = settings.get('SCHEDULER_PERSIST', SCHEDULER_PERSIST)
         queue_key = settings.get('SCHEDULER_QUEUE_KEY', QUEUE_KEY)
-        dupe_filter = settings.get('DUPER_FILTER', True)
+        dupe_filter = settings.get('DUPE_FILTER', True)
         server = redis.Redis(host, port)
         return cls(server, persist, queue_key, dupe_filter)
 
